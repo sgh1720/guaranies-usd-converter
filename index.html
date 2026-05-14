@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guaranies to USD Converter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="converter" aria-labelledby="page-title">
+      <header class="header">
+        <h1 id="page-title">Guaranies to US Dollars</h1>
+        <p id="rateStatus">Loading live exchange rate...</p>
+      </header>
+
+      <section class="flags" aria-label="Currency countries">
+        <div class="country">
+          <div class="flag paraguay-flag" aria-label="Flag of Paraguay">
+            <span class="pyg-emblem">PY</span>
+          </div>
+          <span>Paraguay - PYG</span>
+        </div>
+
+        <div class="direction" aria-hidden="true">to</div>
+
+        <div class="country">
+          <div class="flag usa-flag" aria-label="Flag of the United States">
+            <div class="usa-canton">
+              <span>* * *</span>
+              <span> * * </span>
+              <span>* * *</span>
+            </div>
+          </div>
+          <span>United States - USD</span>
+        </div>
+      </section>
+
+      <section class="fields">
+        <label for="guaraniesInput">Amount in Guaranies (PYG)</label>
+        <input
+          id="guaraniesInput"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          placeholder="Example: 730000"
+        >
+
+        <label for="usdOutput">Amount in USD</label>
+        <input id="usdOutput" type="text" value="0.00" readonly>
+      </section>
+
+      <p id="errorMessage" class="error" role="status"></p>
+      <footer>Exchange rates by ExchangeRate-API</footer>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
