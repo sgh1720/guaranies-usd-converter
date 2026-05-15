@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guaranies to USD Converter</title>
+  <title>Currency Converter</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="app-shell">
     <section class="converter" aria-labelledby="page-title">
       <header class="header">
-        <h1 id="page-title">Guaranies to US Dollars</h1>
+        <h1 id="page-title">Currency Converter</h1>
         <p id="rateStatus">Loading live exchange rate...</p>
       </header>
 
@@ -22,8 +22,6 @@
           <span>Paraguay - PYG</span>
         </div>
 
-        <div class="direction" aria-hidden="true">to</div>
-
         <div class="country">
           <div class="flag usa-flag" aria-label="Flag of the United States">
             <div class="usa-canton">
@@ -33,6 +31,14 @@
             </div>
           </div>
           <span>United States - USD</span>
+        </div>
+
+        <div class="country">
+          <div class="flag brazil-flag" aria-label="Flag of Brazil">
+            <span class="brl-diamond"></span>
+            <span class="brl-globe">BR</span>
+          </div>
+          <span>Brazil - BRL</span>
         </div>
       </section>
 
@@ -46,8 +52,23 @@
           placeholder="Example: 730000"
         >
 
-        <label for="usdOutput">Amount in USD</label>
-        <input id="usdOutput" type="text" value="0.00" readonly>
+        <label for="usdInput">Amount in USD</label>
+        <input
+          id="usdInput"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          placeholder="Example: 100"
+        >
+
+        <label for="brlInput">Amount in Brazilian Reais (BRL)</label>
+        <input
+          id="brlInput"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          placeholder="Example: 500"
+        >
       </section>
 
       <p id="errorMessage" class="error" role="status"></p>

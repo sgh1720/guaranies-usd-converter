@@ -1,57 +1,126 @@
-const DEFAULT_EXCHANGE_RATE = 7300;
+const DEFAULT_RATES = {
+  PYG: 7300,
+  BRL: 5,
+};
 const EXCHANGE_RATE_API_URL = "https://open.er-api.com/v6/latest/USD";
 
-let exchangeRate = DEFAULT_EXCHANGE_RATE;
+let rates = { ...DEFAULT_RATES };
+let isUpdatingFields = false;
 
 const guaraniesInput = document.querySelector("#guaraniesInput");
-const usdOutput = document.querySelector("#usdOutput");
+const usdInput = document.querySelector("#usdInput");
+const brlInput = document.querySelector("#brlInput");
 const rateStatus = document.querySelector("#rateStatus");
 const errorMessage = document.querySelector("#errorMessage");
 
-function convertGuaraniesToUsd(amountGuaranies, pygPerUsd) {
-  if (pygPerUsd <= 0) {
-    throw new Error("Exchange rate must be greater than zero");
-  }
-
-  if (amountGuaranies < 0) {
+function convertToUsd(amount, currency, currentRates) {
+  if (amount < 0) {
     throw new Error("Amount cannot be negative");
   }
 
-  return amountGuaranies / pygPerUsd;
+  if (currency === "USD") {
+    return amount;
+  }
+
+  const rate = currentRates[currency];
+
+  if (rate <= 0) {
+    throw new Error("Exchange rate must be greater than zero");
+  }
+
+  return amount / rate;
+}
+
+function convertFromUsd(amountUsd, currency, currentRates) {
+  if (amountUsd < 0) {
+    throw new Error("Amount cannot be negative");
+  }
+
+  if (currency === "USD") {
+    return amountUsd;
+  }
+
+  const rate = currentRates[currency];
+
+  if (rate <= 0) {
+    throw new Error("Exchange rate must be greater than zero");
+  }
+
+  return amountUsd * rate;
 }
 
 function cleanNumber(value) {
   return value.replace(/,/g, "").trim();
 }
 
-function formatUsd(value) {
+function formatCurrency(value, currency) {
+  const decimalPlaces = currency === "PYG" ? 0 : 2;
+
   return value.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: decimalPlaces,
+    maximumFractionDigits: decimalPlaces,
   });
 }
 
-function updateConversion() {
+function setFieldValues(amountUsd, sourceInput) {
+  isUpdatingFields = true;
+
+  if (sourceInput !== guaraniesInput) {
+    guaraniesInput.value = formatCurrency(convertFromUsd(amountUsd, "PYG", rates), "PYG");
+  }
+
+  if (sourceInput !== usdInput) {
+    usdInput.value = formatCurrency(convertFromUsd(amountUsd, "USD", rates), "USD");
+  }
+
+  if (sourceInput !== brlInput) {
+    brlInput.value = formatCurrency(convertFromUsd(amountUsd, "BRL", rates), "BRL");
+  }
+
+  isUpdatingFields = false;
+}
+
+function clearOtherFields(sourceInput) {
+  isUpdatingFields = true;
+
+  if (sourceInput !== guaraniesInput) {
+    guaraniesInput.value = "";
+  }
+
+  if (sourceInput !== usdInput) {
+    usdInput.value = "";
+  }
+
+  if (sourceInput !== brlInput) {
+    brlInput.value = "";
+  }
+
+  isUpdatingFields = false;
+}
+
+function updateConversion(sourceInput, sourceCurrency) {
+  if (isUpdatingFields) {
+    return;
+  }
+
   errorMessage.textContent = "";
-  const rawAmount = cleanNumber(guaraniesInput.value);
+  const rawAmount = cleanNumber(sourceInput.value);
 
   if (!rawAmount) {
-    usdOutput.value = "0.00";
+    clearOtherFields(sourceInput);
     return;
   }
 
   const amount = Number(rawAmount);
 
   if (!Number.isFinite(amount)) {
-    usdOutput.value = "0.00";
     errorMessage.textContent = "Enter a valid number";
     return;
   }
 
   try {
-    usdOutput.value = formatUsd(convertGuaraniesToUsd(amount, exchangeRate));
+    setFieldValues(convertToUsd(amount, sourceCurrency, rates), sourceInput);
   } catch (error) {
-    usdOutput.value = "0.00";
     errorMessage.textContent = error.message;
   }
 }
@@ -66,25 +135,44 @@ async function loadExchangeRate() {
 
     const data = await response.json();
 
-    if (data.result !== "success" || !data.rates || !data.rates.PYG) {
+    if (data.result !== "success" || !data.rates || !data.rates.PYG || !data.rates.BRL) {
       throw new Error("Exchange rate API returned an invalid response");
     }
 
-    exchangeRate = Number(data.rates.PYG);
-    rateStatus.textContent = `Live rate: 1 USD = ${exchangeRate.toLocaleString("en-US", {
+    rates = {
+      PYG: Number(data.rates.PYG),
+      BRL: Number(data.rates.BRL),
+    };
+    rateStatus.textContent = `Live rates: 1 USD = ${rates.PYG.toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    })} PYG`;
+    })} PYG / ${rates.BRL.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })} BRL`;
   } catch (error) {
-    exchangeRate = DEFAULT_EXCHANGE_RATE;
-    rateStatus.textContent = `Using fallback rate: 1 USD = ${DEFAULT_EXCHANGE_RATE.toLocaleString("en-US", {
+    rates = { ...DEFAULT_RATES };
+    rateStatus.textContent = `Using fallback rates: 1 USD = ${DEFAULT_RATES.PYG.toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    })} PYG`;
+    })} PYG / ${DEFAULT_RATES.BRL.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })} BRL`;
   }
 
-  updateConversion();
+  const activeInput = document.activeElement;
+
+  if (activeInput === usdInput) {
+    updateConversion(usdInput, "USD");
+  } else if (activeInput === brlInput) {
+    updateConversion(brlInput, "BRL");
+  } else {
+    updateConversion(guaraniesInput, "PYG");
+  }
 }
 
-guaraniesInput.addEventListener("input", updateConversion);
+guaraniesInput.addEventListener("input", () => updateConversion(guaraniesInput, "PYG"));
+usdInput.addEventListener("input", () => updateConversion(usdInput, "USD"));
+brlInput.addEventListener("input", () => updateConversion(brlInput, "BRL"));
 loadExchangeRate();
