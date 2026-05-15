@@ -83,7 +83,10 @@ function formatCurrency(value, currency) {
 function formatSourceField(sourceInput) {
   const formattedValue = formatEditableNumber(sourceInput.value);
   sourceInput.value = formattedValue;
-  sourceInput.setSelectionRange(formattedValue.length, formattedValue.length);
+
+  if (typeof sourceInput.setSelectionRange === "function") {
+    sourceInput.setSelectionRange(formattedValue.length, formattedValue.length);
+  }
 }
 
 function setFieldValues(amountUsd, sourceInput) {
