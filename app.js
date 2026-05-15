@@ -53,6 +53,24 @@ function cleanNumber(value) {
   return value.replace(/,/g, "").trim();
 }
 
+function formatEditableNumber(value) {
+  const rawValue = cleanNumber(value);
+
+  if (!rawValue) {
+    return "";
+  }
+
+  const isNegative = rawValue.startsWith("-");
+  const unsignedValue = rawValue.replace(/-/g, "");
+  const hasDecimal = unsignedValue.includes(".");
+  const [integerPart, ...decimalParts] = unsignedValue.split(".");
+  const digitsOnlyInteger = integerPart.replace(/\D/g, "");
+  const decimalPart = decimalParts.join("").replace(/\D/g, "");
+  const groupedInteger = (digitsOnlyInteger || "0").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  return `${isNegative ? "-" : ""}${groupedInteger}${hasDecimal ? `.${decimalPart}` : ""}`;
+}
+
 function formatCurrency(value, currency) {
   const decimalPlaces = currency === "PYG" ? 0 : 2;
 
@@ -60,6 +78,12 @@ function formatCurrency(value, currency) {
     minimumFractionDigits: decimalPlaces,
     maximumFractionDigits: decimalPlaces,
   });
+}
+
+function formatSourceField(sourceInput) {
+  const formattedValue = formatEditableNumber(sourceInput.value);
+  sourceInput.value = formattedValue;
+  sourceInput.setSelectionRange(formattedValue.length, formattedValue.length);
 }
 
 function setFieldValues(amountUsd, sourceInput) {
@@ -119,6 +143,7 @@ function updateConversion(sourceInput, sourceCurrency) {
   }
 
   try {
+    formatSourceField(sourceInput);
     setFieldValues(convertToUsd(amount, sourceCurrency, rates), sourceInput);
   } catch (error) {
     errorMessage.textContent = error.message;

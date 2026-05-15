@@ -4,8 +4,6 @@
   --text: #14213d;
   --muted: #5f6f89;
   --line: #d9e1ee;
-  --green: #176b3a;
-  --yellow: #f7d116;
   --red: #b00020;
   --blue: #214e8a;
 }
@@ -76,90 +74,13 @@ footer {
 }
 
 .flag {
-  position: relative;
   width: min(150px, 100%);
   height: 90px;
-  overflow: hidden;
+  display: block;
   border: 1px solid #c8d1df;
+  background: #ffffff;
+  object-fit: contain;
   box-shadow: 0 8px 22px rgba(20, 33, 61, 0.12);
-}
-
-.paraguay-flag {
-  background: linear-gradient(
-    to bottom,
-    #d52b1e 0 33.333%,
-    #ffffff 33.333% 66.666%,
-    #0038a8 66.666% 100%
-  );
-}
-
-.pyg-emblem {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  transform: translate(-50%, -50%);
-  border: 2px solid #25408f;
-  border-radius: 50%;
-  background: #f7d116;
-  color: #25408f;
-  font-size: 0.7rem;
-  font-weight: 800;
-}
-
-.usa-flag {
-  background: repeating-linear-gradient(
-    to bottom,
-    #b22234 0,
-    #b22234 6.92px,
-    #ffffff 6.92px,
-    #ffffff 13.84px
-  );
-}
-
-.usa-canton {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 64px;
-  height: 48px;
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  background: #3c3b6e;
-  color: #ffffff;
-  font-size: 0.62rem;
-  line-height: 1.2;
-  font-weight: 700;
-}
-
-.brazil-flag {
-  display: grid;
-  place-items: center;
-  background: #009b3a;
-}
-
-.brl-diamond {
-  width: 104px;
-  height: 64px;
-  background: var(--yellow);
-  transform: rotate(45deg);
-}
-
-.brl-globe {
-  position: absolute;
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #002776;
-  color: #ffffff;
-  font-size: 0.78rem;
-  font-weight: 800;
 }
 
 .fields {
